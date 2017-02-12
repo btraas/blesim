@@ -25,6 +25,7 @@ import android.bluetooth.BluetoothGattService;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -49,6 +51,14 @@ public class ColorPickerServiceFragment extends ServiceFragment {
 
     private static final UUID COLOR_RGB_UUID = UUID
             .fromString("00002A19-0000-1000-8000-00805f9b34fb");
+
+
+    private static final UUID AUTOMATION_IO_UUID = UUID
+            .fromString("00001815-0000-1000-8000-00805f9b34fb");
+
+    private static final UUID ALERT_LEVEL_UUID = UUID
+            .fromString("00002A06-0000-1000-8000-00805f9b34fb");
+
 
     private ServiceFragmentDelegate mDelegate;
     // UI
@@ -85,14 +95,14 @@ public class ColorPickerServiceFragment extends ServiceFragment {
 
     public ColorPickerServiceFragment() {
         mColorRGBCharacteristic =
-                new BluetoothGattCharacteristic(COLOR_RGB_UUID,
+                new BluetoothGattCharacteristic(ALERT_LEVEL_UUID,
                         BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE | BluetoothGattCharacteristic.PROPERTY_BROADCAST,
                         BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
 
         mColorRGBCharacteristic.addDescriptor(
                 Peripheral.getClientCharacteristicConfigurationDescriptor());
 
-        mColorPickerService = new BluetoothGattService(COLOR_PICKER_SERVICE_UUID,
+        mColorPickerService = new BluetoothGattService(AUTOMATION_IO_UUID,
                 BluetoothGattService.SERVICE_TYPE_PRIMARY);
         mColorPickerService.addCharacteristic(mColorRGBCharacteristic);
     }
@@ -146,7 +156,7 @@ public class ColorPickerServiceFragment extends ServiceFragment {
 
     @Override
     public ParcelUuid getServiceUUID() {
-        return new ParcelUuid(COLOR_PICKER_SERVICE_UUID);
+        return new ParcelUuid(AUTOMATION_IO_UUID);
     }
 
     private  void setColorRGB(int[] value) {
@@ -179,14 +189,25 @@ public class ColorPickerServiceFragment extends ServiceFragment {
             return BluetoothGatt.GATT_INVALID_OFFSET;
         }
 
+        /*
         if (value.length != 3) {
             return BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH;
         }
+        */
+
+        // edited to support big numbers bigger than 0x80000000
+        int color = (int)Long.parseLong(( new Byte(value[0]).toString()), 16);
+        final int r = (color >> 16) & 0xFF;
+        final int g = (color >> 8) & 0xFF;
+        final int b = (color >> 0) & 0xFF;
+
+        //Log.d(value[0])
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                setColorRGB(new int[] {value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF});
+                setColorRGB(new int[] {r, g, b});
+                //setColorRGB(new int[] {value[0] & 0xFF, value[1] & 0xFF, value[2] & 0xFF});
             }
         });
 
