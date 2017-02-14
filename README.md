@@ -25,7 +25,7 @@ The developer can use the new Web Bluetooth features to connect to the app to Re
 
 From the app a developer can set the characteristics' values, send notifications and disconnect.
 
-![Battery Service](Battery Service.png) ![Heart Rate Service](Heart Rate Service.png)
+![Color Picker Service](color-picker.png) ![Battery Service](Battery Service.png) ![Heart Rate Service](Heart Rate Service.png)
 
 ### Caveats
 
