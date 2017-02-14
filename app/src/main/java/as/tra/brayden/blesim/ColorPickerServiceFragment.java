@@ -69,6 +69,12 @@ public class ColorPickerServiceFragment extends ServiceFragment {
     private SeekBar mRSeekBar;
     private SeekBar mGSeekBar;
     private SeekBar mBSeekBar;
+
+    private TextView mHexTextView;
+    private TextView mRGBTextView;
+
+    private static final String TAG = ColorPickerServiceFragment.class.getName();
+
     private final OnSeekBarChangeListener mOnSeekBarChangeListener = new OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -117,7 +123,7 @@ public class ColorPickerServiceFragment extends ServiceFragment {
         View view = inflater.inflate(R.layout.fragment_color_picker, container, false);
 
         //TODO getParent
-        mLayout = (FrameLayout) view.findViewById(R.id.fragment_container);
+        mLayout = (FrameLayout) view.findViewById(R.id.colorCanvas);
 
         mRTextView = (TextView) view.findViewById(R.id.textView_colorR);
         mGTextView = (TextView) view.findViewById(R.id.textView_colorG);
@@ -128,6 +134,9 @@ public class ColorPickerServiceFragment extends ServiceFragment {
         mGSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
         mBSeekBar = (SeekBar) view.findViewById(R.id.seekBar_colorB);
         mBSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+
+        mHexTextView = (TextView) view.findViewById(R.id.textView_colorResult_hexVal);
+        mRGBTextView = (TextView) view.findViewById(R.id.textView_colorResult_RGBVal);
 
         setColorRGB();
         return view;
@@ -166,6 +175,10 @@ public class ColorPickerServiceFragment extends ServiceFragment {
         setColorRGB();
     }
 
+    private static String toHex(int val) {
+        return (val < 16 ? "0" : "") + Integer.toHexString(val).toUpperCase();
+    }
+
     private void setColorRGB() {
         int r = mRSeekBar.getProgress();
         int g = mGSeekBar.getProgress();
@@ -181,6 +194,9 @@ public class ColorPickerServiceFragment extends ServiceFragment {
 
         //TODO add alpha
         mLayout.setBackgroundColor(Color.argb(255, r, g, b));
+        mRGBTextView.setText(r+","+g+","+b);
+        mHexTextView.setText("#"+toHex(r)+toHex(g)+toHex(b));
+
     }
 
     @Override
@@ -189,17 +205,46 @@ public class ColorPickerServiceFragment extends ServiceFragment {
             return BluetoothGatt.GATT_INVALID_OFFSET;
         }
 
+
+
         /*
         if (value.length != 3) {
             return BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH;
         }
         */
 
-        // edited to support big numbers bigger than 0x80000000
-        int color = (int)Long.parseLong(( new Byte(value[0]).toString()), 16);
-        final int r = (color >> 16) & 0xFF;
-        final int g = (color >> 8) & 0xFF;
-        final int b = (color >> 0) & 0xFF;
+        final int r, g, b;
+
+        Log.d(TAG, "byte array size: "+value.length);
+
+        if(value.length == 1) {
+
+            Log.i(TAG, "Recieved Hex Color val: " + value[0]);
+
+            // edited to support big numbers bigger than 0x80000000
+            int color = (int) Long.parseLong((new Byte(value[0]).toString()), 16);
+            r = (color >> 16) & 0xFF;
+            g = (color >> 8) & 0xFF;
+            b = (color >> 0) & 0xFF;
+        } else if(value.length == 3) {
+
+            r = value[0] & 0xFF;
+            g = value[1] & 0xFF;
+            b = value[2] & 0xFF;
+            Log.i(TAG, "Recieved RGB Color val: " + r + ", " + g + ", " + b);
+        } else {
+
+            r = -1;
+            g = -1;
+            b = -1;
+
+            Log.e(TAG, "Recieved invalid byte array: "+Arrays.toString(value));
+
+        }
+
+
+
+
 
         //Log.d(value[0])
 
