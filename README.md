@@ -7,7 +7,11 @@
 * Added Color picker service
 * Based on Color picker fork here: https://github.com/dati91/ble-test-peripheral-android/commit/0af90c7e6512a5ed81a1e0e12a0e61f4dbfc0670
 
-* Allows recieving colors as Hex byte array (2-digit R, 2-digit G, 2-digit B) or 6-digit RGB Hex
+* Allows recieving colors as BLE "Alert Status" Write characteristic Hex byte array (2-digit R, 2-digit G, 2-digit B) or 6-digit RGB Hex
+
+
+### Original App:
+----------------------------------------------------------------------------------------------------
 
 [![Build Status](https://travis-ci.org/WebBluetoothCG/ble-test-peripheral-android.svg)](https://travis-ci.org/WebBluetoothCG/ble-test-peripheral-android)
 
