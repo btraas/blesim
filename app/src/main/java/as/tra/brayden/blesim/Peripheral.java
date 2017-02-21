@@ -229,6 +229,8 @@ public class Peripheral extends Activity implements ServiceFragment.ServiceFragm
         mCurrentServiceFragment = new HeartRateServiceFragment();
       } else if (peripheralIndex == 2) {
         mCurrentServiceFragment = new ColorPickerServiceFragment();
+      } else if (peripheralIndex == 3) {
+          mCurrentServiceFragment = new UvizioServiceFragment();
       } else {
         Log.wtf(TAG, "Service doesn't exist");
       }

@@ -217,7 +217,7 @@ public class ColorPickerServiceFragment extends ServiceFragment {
 
         Log.d(TAG, "byte array size: "+value.length);
 
-        if(value.length == 1) {
+        if(value.length < 3) {
 
             Log.i(TAG, "Recieved Hex Color val: " + value[0]);
 
@@ -226,23 +226,20 @@ public class ColorPickerServiceFragment extends ServiceFragment {
             r = (color >> 16) & 0xFF;
             g = (color >> 8) & 0xFF;
             b = (color >> 0) & 0xFF;
-        } else if(value.length == 3) {
+
+        } else if(value.length >= 3) {
 
             r = value[0] & 0xFF;
             g = value[1] & 0xFF;
             b = value[2] & 0xFF;
             Log.i(TAG, "Recieved RGB Color val: " + r + ", " + g + ", " + b);
+
+
+
+
         } else {
-
-            r = -1;
-            g = -1;
-            b = -1;
-
-            Log.e(TAG, "Recieved invalid byte array: "+Arrays.toString(value));
-
+            return BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH;
         }
-
-
 
 
 

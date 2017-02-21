@@ -60,7 +60,7 @@ Pixel PIXEL_OFF = PIXEL_BLACK;
 Pixel PIXEL_ON  = PIXEL_WHITE;
 
 Data DATA = {MODE_STATIC, MIN_PERIOD, 1, {PIXEL_OFF} };
-char *DEFAULT_RECIEVE = {MODE_STATIC, MIN_PERIOD, 1, {PIXEL_OFF}};
+char *DEFAULT_RECIEVE = {MODE_STATIC, MIN_PERIOD, 1, {PIXEL_OFF}}; // ERROR: casting int > 255 to byte
 
 void setup() {
   // setup the leds for output
