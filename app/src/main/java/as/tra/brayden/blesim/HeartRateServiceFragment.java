@@ -157,10 +157,10 @@ public class HeartRateServiceFragment extends ServiceFragment {
             /* No permissions */ 0);
 
     mHeartRateMeasurementCharacteristic.addDescriptor(
-        Peripheral.getClientCharacteristicConfigurationDescriptor());
+        PeripheralActivity.getClientCharacteristicConfigurationDescriptor());
 
     mHeartRateMeasurementCharacteristic.addDescriptor(
-        Peripheral.getCharacteristicUserDescriptionDescriptor(HEART_RATE_MEASUREMENT_DESCRIPTION));
+        PeripheralActivity.getCharacteristicUserDescriptionDescriptor(HEART_RATE_MEASUREMENT_DESCRIPTION));
 
     mBodySensorLocationCharacteristic =
         new BluetoothGattCharacteristic(BODY_SENSOR_LOCATION_UUID,

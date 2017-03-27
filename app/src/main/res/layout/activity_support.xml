@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context="as.tra.brayden.blesim.SupportActivity">
+
+    <TextView
+        android:text="Need Help?"
+        android:textSize="50sp"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#AAAAAA" />
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:paddingTop="10dp">
+
+            <TextView
+                android:text="App Version"
+                android:paddingTop="10dp"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="@string/app_version"
+                android:id="@+id/version"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingEnd="5dp"/>
+            <TextView
+                android:text="@string/app_build_date"
+                android:id="@+id/versionDate"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"/>
+        </LinearLayout>
+
+
+            <TextView
+                android:text="API URL"
+                android:paddingTop="10dp"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"/>
+            <TextView
+                android:id="@+id/apiUrl"
+                android:text="@string/rest_url"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"/>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

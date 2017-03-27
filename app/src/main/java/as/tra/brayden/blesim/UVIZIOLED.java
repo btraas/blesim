@@ -77,11 +77,13 @@ public abstract class UVIZIOLED {
     }
 
 
-    public static enum Mode {
-        STATIC  ((byte)0),
-        BLINK  ((byte)1),
-        FADE   ((byte)2),
-        FRAMES ((byte)3);
+    public enum Mode {
+        OFF     ((byte)0),
+        STATIC  ((byte)1),
+        BLINK  ((byte)2),
+        FADE   ((byte)3),
+        FRAMES ((byte)4),
+        RAINBOW ((byte)5);
 
         private byte value;
 
@@ -118,14 +120,18 @@ public abstract class UVIZIOLED {
         public int b;
 
 
-
         public Pixel(int r, int g, int b) {
             this.r = r;
             this.g = g;
             this.b = b;
 
-            Log.d(TAG, "new Pixel("+r + ", " + g  + ", "+ b + ")");
+            //Log.d(TAG, "new Pixel("+r + ", " + g  + ", "+ b + ")");
 
+        }
+
+        public Pixel add(int value) {
+            //Log.d(TAG, "Adding "+value+" to"+this);
+            return new IntPixel((r+value)%256, (g+value)%256, (b+value)%256);
         }
 
 

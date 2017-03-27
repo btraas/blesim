@@ -34,7 +34,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -106,7 +105,7 @@ public class ColorPickerServiceFragment extends ServiceFragment {
                         BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
 
         mColorRGBCharacteristic.addDescriptor(
-                Peripheral.getClientCharacteristicConfigurationDescriptor());
+                PeripheralActivity.getClientCharacteristicConfigurationDescriptor());
 
         mColorPickerService = new BluetoothGattService(AUTOMATION_IO_UUID,
                 BluetoothGattService.SERVICE_TYPE_PRIMARY);

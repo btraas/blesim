@@ -31,17 +31,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.RunnableFuture;
-
-import static as.tra.brayden.blesim.UVIZIOLED.PIXEL_OFF;
 
 
 public class UvizioServiceFragment extends ServiceFragment {
+
+    private boolean active = false;
+
+    private static final int NUM_PIXELS = 60;
 
     //TODO fix UUIDs
 
@@ -103,7 +103,7 @@ public class UvizioServiceFragment extends ServiceFragment {
                         BluetoothGattCharacteristic.PERMISSION_WRITE);
 
         mWriteCharacteristic.addDescriptor(
-                Peripheral.getClientCharacteristicConfigurationDescriptor());
+                PeripheralActivity.getClientCharacteristicConfigurationDescriptor());
 
         mUvizioService = new BluetoothGattService(RFDUINO_GENERIC_SERVICE_UUID,
                 BluetoothGattService.SERVICE_TYPE_PRIMARY);
@@ -118,6 +118,7 @@ public class UvizioServiceFragment extends ServiceFragment {
 
 
     private FrameLayout mCanvas;
+    private FrameLayout[] innerViews = new FrameLayout[UvizioServiceFragment.NUM_PIXELS];
     // Lifecycle callbacks
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,22 +129,40 @@ public class UvizioServiceFragment extends ServiceFragment {
         //TODO getParent
         mCanvas = (FrameLayout) view.findViewById(R.id.uvizioCanvas);
 
+        for(int i = 0; i < UvizioServiceFragment.NUM_PIXELS; ++i) {
+            FrameLayout inner = new FrameLayout(this.getActivity());
+            inner.setMinimumWidth(5);
+            inner.setMinimumHeight(5);
+            innerViews[i] = inner;
+            mCanvas.addView(inner);
+        }
+
+
 
        // mHexTextView = (TextView) view.findViewById(R.id.textView_colorResult_hexVal);
         //mRGBTextView = (TextView) view.findViewById(R.id.textView_colorResult_RGBVal);
 
-
+        active = true;
         Runnable loop = (new Runnable() {
             @Override
             public void run() {
-                while(true) {
+                while(active) {
                     display(data);
                 }
             }
         });
         looper = new Thread(loop);
         looper.start();
+
         return view;
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        active = false;
+
     }
 
     @Override
@@ -185,12 +204,18 @@ public class UvizioServiceFragment extends ServiceFragment {
         // this runs on a separate thread.
         // each function is responsible for sleeping this thread & calling the ui thread.
         switch(data.mode) {
-            case STATIC  : displayFramesOnUI(data); break;
+            case OFF     : displayStaticOnUI(null);
+            case STATIC  : displayStaticOnUI(data); break;
             case BLINK   : displayBlinkOnUI(data); break;
             case FRAMES  : displayFramesOnUI(data); break;
+            case RAINBOW : displayRainbowOnUI(data); break;
         }
 
 
+    }
+
+    private void displayPixel(int idx, UVIZIOLED.Pixel p) {
+        innerViews[idx].setBackgroundColor(Color.argb(255, p.r, p.g, p.g));
     }
 
     private void displayStatic(final UVIZIOLED.Pixel p) {
@@ -204,6 +229,11 @@ public class UvizioServiceFragment extends ServiceFragment {
         //getActivity().runOnUiThread(new Runnable() {
         //    @Override
         //    public void run() {
+
+        //for(int i = 0; i < innerViews.length; ++i) {
+        //    innerViews[i].setBackgroundColor(Color.argb(255, p.r, p.g, p.b));
+        //}
+
                 mCanvas.setBackgroundColor(Color.argb(255, p.r, p.g, p.b));
 //                mRGBTextView.setText(p.r+","+p.g+","+p.b);
  //               mHexTextView.setText("#"+toHex(p.r)+toHex(p.g)+toHex(p.b));
@@ -219,6 +249,39 @@ public class UvizioServiceFragment extends ServiceFragment {
         //}
 
        // UVIZIOLED.delay(1000);
+    }
+
+    private void displayStaticOnUI(final UVIZIOLED.Data data) {
+
+
+        final int wait;
+        final UVIZIOLED.Pixel p;
+
+        if(data != null && data.pixels != null && data.numPixels > 0)
+        {
+            wait = data.period / data.numPixels;
+            p = data.pixels[0];
+        } else {
+            wait = 5000;
+            p = new UVIZIOLED.IntPixel(0,0,0);
+        }
+
+        final CountDownLatch UILatch = new CountDownLatch(1);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                displayStatic(p);
+                UILatch.countDown();
+            }
+        });
+        UVIZIOLED.await(UILatch);
+        UVIZIOLED.delay(wait);
+
+
+
+        //UVIZIOLED.delay(data.period);
+
+
     }
 
     private void displayBlinkOnUI(final UVIZIOLED.Data data) {
@@ -284,6 +347,50 @@ public class UvizioServiceFragment extends ServiceFragment {
 
         //UVIZIOLED.delay(data.period);
 
+
+    }
+
+
+    private void displayRainbowOnUI(final UVIZIOLED.Data data) {
+
+        final int numPix = UvizioServiceFragment.NUM_PIXELS;
+        final int wait = data.period / numPix;
+
+
+
+        //final CountDownLatch UILatch = new CountDownLatch(data.numPixels);
+        //final CountDownLatch DataLatch = new CountDownLatch(data.numPixels);
+
+
+
+        UVIZIOLED.Pixel baseColor = new UVIZIOLED.IntPixel(255, 155, 55);
+        for(int i = 0; i < 256; i++) { // for each frame
+            final UVIZIOLED.Pixel p = baseColor.add(i);
+            final int thisFrame = i + 1;
+            final CountDownLatch UILatch = new CountDownLatch(1);
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    displayStatic(p);
+                    UILatch.countDown();
+                    //UVIZIOLED.delay(50);
+                    /*
+                    for (int j = 0; j < numPix; ++j) {
+
+                        int thisPix = j + 1;
+                        UVIZIOLED.Pixel pixColor = baseColor.add(j);
+                        displayStatic(pixColor);
+                        UVIZIOLED.delay(50);
+                    }
+                    */
+
+                }
+
+
+            });
+            UVIZIOLED.await(UILatch);
+            UVIZIOLED.delay(10);
+        }
 
     }
 

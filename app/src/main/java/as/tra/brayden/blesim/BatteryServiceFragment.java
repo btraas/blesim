@@ -115,10 +115,10 @@ public class BatteryServiceFragment extends ServiceFragment {
             BluetoothGattCharacteristic.PERMISSION_READ);
 
     mBatteryLevelCharacteristic.addDescriptor(
-        Peripheral.getClientCharacteristicConfigurationDescriptor());
+        PeripheralActivity.getClientCharacteristicConfigurationDescriptor());
 
     mBatteryLevelCharacteristic.addDescriptor(
-        Peripheral.getCharacteristicUserDescriptionDescriptor(BATTERY_LEVEL_DESCRIPTION));
+        PeripheralActivity.getCharacteristicUserDescriptionDescriptor(BATTERY_LEVEL_DESCRIPTION));
 
     mBatteryService = new BluetoothGattService(BATTERY_SERVICE_UUID,
         BluetoothGattService.SERVICE_TYPE_PRIMARY);
