@@ -129,9 +129,47 @@ public abstract class UVIZIOLED {
 
         }
 
+        // eg. addColorVal(250, 10)
+        // result = 250+10 = 260
+        // result > 255
+        //      return addColorVal(255, -5)
+
+        // eg. addColorVal(5, -10)
+        // result = 5-10 = -5
+        // result < 0
+        //      return addColorVal(0, 5)
+
+        // eg. addColorVal(250, 270)
+        // result = 250 + 270 = 520
+        // result > 255
+        //      return addColorVal(255, -265)
+        //      result = 255 - 265 = -10
+        //      result < 0
+        //          return addColorVal(0, 10)
+
+        private int addColorVal(int orig, int addVal) {
+            int result = orig + addVal;
+            if(result >= 0 && result <= 255) return result; // base case
+
+            if(result > 255) {
+                return addColorVal(255, -(result-255));
+            }
+            if(result < 0) {
+                return addColorVal(0, -(result));
+            }
+            return result;
+        }
+
         public Pixel add(int value) {
             //Log.d(TAG, "Adding "+value+" to"+this);
-            return new IntPixel((r+value)%256, (g+value)%256, (b+value)%256);
+            return new IntPixel(addColorVal(r, value),
+                                addColorVal(g, value),
+                                addColorVal(b, value));
+        }
+
+        public Pixel add(int value, int rDir, int gDir, int bDir) {
+            //Log.d(TAG, "Adding "+value+" to"+this);
+            return new IntPixel((r+(rDir*value))%256, (g+(gDir*value))%256, (b+(bDir*value))%256);
         }
 
 
