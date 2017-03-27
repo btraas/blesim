@@ -364,7 +364,7 @@ public class UvizioServiceFragment extends ServiceFragment {
 
 
         UVIZIOLED.Pixel baseColor = new UVIZIOLED.IntPixel(255, 155, 55);
-        for(int i = 0; i < 256; i++) { // for each frame
+        for(int i = 0; i < (256*2); i++) { // for each frame
             final UVIZIOLED.Pixel p = baseColor.add(i);
             final int thisFrame = i + 1;
             final CountDownLatch UILatch = new CountDownLatch(1);
@@ -389,7 +389,7 @@ public class UvizioServiceFragment extends ServiceFragment {
 
             });
             UVIZIOLED.await(UILatch);
-            UVIZIOLED.delay(10);
+            UVIZIOLED.delay(1);
         }
 
     }
