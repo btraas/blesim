@@ -48,7 +48,7 @@ public class MainActivity extends AppBarActivity {
         protected void callback(JSONObject result) {
         }
       };
-      task.suppressErrors = false;
+      task.suppressErrors = true;
       task.execute();
 
     } catch (JSONException e) {
